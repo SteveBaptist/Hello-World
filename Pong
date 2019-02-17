@@ -1,0 +1,47 @@
+#! usr/bin/python
+
+"""
+Pong 
+Created Feb 17 2019
+By Steve Baptist
+"""
+import sys
+import pygame
+
+pygame.init()
+
+scrnsz = [600, 400]
+objectsPlay = []
+screen= pygame.display.set_mode(scrnsz)
+
+class obj:
+#"""
+#This is all 3 game elements, ball and both paddles. With vectors in lists it is always x then y. 
+#With object size it is width and height.
+#"""
+
+  objPlay = []
+  def __init__(self, speed = [0, 0], size = [5, 15], pos = [0, 0]):
+    self.speed = speed
+    self.size = size
+    self.pos = pos
+  
+  def start():
+    for o in range(3):
+      self.objPlay = obj()
+
+class scrbrd:
+#"""
+#
+#"""
+  def __init__(self):
+    pass
+
+
+def gameLoop():
+  #try both next two ways to setup board
+  #for o in range(3):
+  #  objectsPlay[o] = obj()
+  #obj.start()
+
+gameLoop()
