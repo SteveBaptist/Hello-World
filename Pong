@@ -6,13 +6,13 @@ Created Feb 17 2019
 By Steve Baptist
 """
 import sys
-import pygame
+#import pygame
 
-pygame.init()
+#pygame.init()
 
 scrnsz = [600, 400]
 objectsPlay = []
-screen= pygame.display.set_mode(scrnsz)
+#screen= pygame.display.set_mode(scrnsz)
 
 class obj:
 #"""
@@ -40,8 +40,9 @@ class scrbrd:
 
 def gameLoop():
   #try both next two ways to setup board
-  #for o in range(3):
-  #  objectsPlay[o] = obj()
+  for o in range(3):
+    objectsPlay.append(obj())
   #obj.start()
-
+  
 gameLoop()
+print(objectsPlay[2].speed)
