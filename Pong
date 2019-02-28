@@ -1,48 +1,144 @@
+'''
 #! usr/bin/python
+Created on Feb 17, 2019
 
-"""
-Pong 
-Created Feb 17 2019
-By Steve Baptist
-"""
-import sys
-#import pygame
+@author: Steve Baptist
+'''
 
-#pygame.init()
+#import sys
+import pygame
+import random
+
+pygame.init()
 
 scrnsz = [600, 400]
-objectsPlay = []
-#screen= pygame.display.set_mode(scrnsz)
+screen= pygame.display.set_mode(scrnsz)
+white = [225, 225, 225]
+black = [0, 0, 0]
+clock = pygame.time.Clock()
 
-class obj:
-#"""
-#This is all 3 game elements, ball and both paddles. With vectors in lists it is always x then y. 
-#With object size it is width and height.
-#"""
+class paddle:
+    pos = [[2, 193], [593, 193]]
+    padSpd = 10
+    width = 5
+    height = 80
+    color = white
+    sur = pygame.Surface((width, height))
+    
+    def __init__(self, player = False, mvUp = False, mvDwn = False,\
+                 mvSpd = 0, sur = sur):
+        self.player = player
+        self.mvUp = mvUp
+        self.mvDwn = mvDwn
+        self.mvSpd = mvSpd
+        self.sur = sur
+        self.sur.fill(paddle.color)
 
-  objPlay = []
-  def __init__(self, speed = [0, 0], size = [5, 15], pos = [0, 0]):
-    self.speed = speed
-    self.size = size
-    self.pos = pos
+    def move(self, ball = None):
+        if self.player is True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_w:
+                        self.mvUp = True
+                        self.mvSpd = paddle.padSpd * -1
+                    elif event.key == pygame.K_s:
+                        self.mvDwn = True
+                        self.mvSpd = paddle.padSpd * 1
+                
+                if event.type == pygame.KEYUP:
+                    self.mvSpd = 0
+                    self.mvUp = False
+                    self.mvDwn = False
+            
+            if self.mvUp is True and paddle.pos[0][1] > 0:
+                paddle.pos[0][1] += self.mvSpd
+            
+            if self.mvDwn is True and paddle.pos[0][1] < scrnsz[1] - paddle.height:
+                paddle.pos[0][1] += self.mvSpd
+        
+        if self.player is False:
+            paddle.pos[1][1] = ball.pos[1] - 0.5 * paddle.height
+
+class ball:
+    startPos = [298, 198]
+    startSpd = [0, 0]
+    collision = [] #[list(range(pos[0], pos[0] + 5)), list(range(pos[1], 
+                    #pos[1] + 25))]
+    sur = pygame.Surface((5, 5))
+    color = white
+    def __init__(self, sur = sur):
+        self.pos = ball.startPos
+        self.ballSpd = ball.startSpd
+        self.sur = sur
+        self.sur.fill(ball.color)
+
+    def changeSpd(self):
+        self.ballSpd = [random.choice([-3, -2, -1]), \
+                        random.choice([1, 2, 3])]
+    
+    def mvBall(self):
+        if self.pos[1] > scrnsz[1]:
+            self.ballSpd[1] *= -1
+        elif self.pos[1] < 0:
+            self.ballSpd[1] *= -1
+        ball.collision = []
+        
+        for i in range(paddle.height):
+            ball.collision.append(paddle.pos[0][1] + i)
   
-  def start():
-    for o in range(3):
-      self.objPlay = obj()
+        if self.pos[0] < paddle.pos[0][0] + 5:
+            if self.pos[1] in ball.collision:
+                self.ballSpd[0] *= -1
+            print("Bounce")
+        
+        for i in range(paddle.height):
+            ball.collision.append(paddle.pos[1][1] + i)
+  
+        if self.pos[0] > paddle.pos[1][0]:
+            if self.pos[1] in ball.collision:
+                self.ballSpd[0] *= -1
+            print("Rebound")
+            
+        for i in range(2):
+            self.pos[i] += self.ballSpd[i]
 
-class scrbrd:
-#"""
-#
-#"""
-  def __init__(self):
-    pass
-
+class scoreBoard:
+    def __init__(self, score = [0, 0]):
+        self.score = score
+    
+    def checkScore(self, ball):
+        if ball.pos[0] > scrnsz[0]:
+            self.score[0] += 1
+            ball.pos = [scrnsz[0] * .5, scrnsz[1] * .5]
+            print(self.score)
+            ball.ballSpd = [random.choice([-3, -2, -1]), random.choice([1, 2, 3])]
+        elif ball.pos[0] < 0:
+            self.score[1] += 1
+            ball.pos = [scrnsz[0] * .5, scrnsz[1] * .5]
+            print(self.score)
+            ball.ballSpd = [random.choice([-3, -2, -1]), random.choice([1, 2, 3])]        
 
 def gameLoop():
-  #try both next two ways to setup board
-  for o in range(3):
-    objectsPlay.append(obj())
-  #obj.start()
-  
-gameLoop()
-print(objectsPlay[2].speed)
+    paddle1 = paddle(player = True)
+    paddle2 = paddle(player = False)
+    bal = ball()
+    board = scoreBoard()
+    play = True
+    def __init__(self):
+        pass
+    bal.changeSpd()
+    
+    while play:
+        paddle1.move()
+        paddle2.move(bal)
+        bal.mvBall()
+        board.checkScore(bal)
+        screen.fill(black)
+        screen.blit(paddle1.sur, paddle1.pos)
+        screen.blit(paddle2.sur, paddle2.pos[1])
+        screen.blit(bal.sur, bal.pos)
+        pygame.display.flip()
+        clock.tick(60)
+
+while True:
+    gameLoop()
